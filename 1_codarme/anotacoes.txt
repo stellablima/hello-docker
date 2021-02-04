@@ -1,0 +1,17 @@
+node api docker
+
+//hiatus
+https://www.youtube.com/watch?v=z4Vmpc1BOx0&t=423s&ab_channel=CodarMe
+
+//procurar video de autenticação com jwt
+
+npm install nodemon -g
+npm install make -g
+npm install dotenv --save
+
+npm install esm --save
+npm install mongoose --save
+npm install pm2 --save 
+npm install restify --save ?
+
+roda banco, rabbit e outros serviços fora 

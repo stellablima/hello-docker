@@ -1,0 +1,94 @@
+https://www.youtube.com/watch?v=j9vfSaCIyPI&ab_channel=InsightLab
+para testes: https://labs.play-with-docker.com/
+
+docker do 0:
+
+>Instanciando img em uma maquina criando o container se nao existir(img: hello-world)
+.docker run hello-world
+
+baseado em imagens criamos instancias de containers, quando
+a imagem nao esta na maquina local ele procura no docker hub, baixa
+e executa a img.
+
+img: instruções que são executadas a fim de instanciar um container,
+baixando dependencias, e iniciando serviço e etc
+Tem varias camadas de leitura, quando instanciada cria camada extra
+de escrita e leitura, toda vez que cria um container diferente uma
+nova camada de escrita e leitura e crianda e referenciada a img
+
+>criando multiplas instancias de container:
+.docker run ubuntu
+.docker run ubuntu echo 'hello-world'
+.docker run ubuntu cat /etc/*release*
+.docker run ubuntu:16.04 cat /etc/*release*
+
+
+>Sempre que damos run criamos um novo container
+.docker ps -a
+.docker images
+
+>executando um container no background
+.docker run -d ubuntu sleep 2000
+.docker ps
+.docker stop <id>
+.docker ps
+
+>executando comando em container on
+.docker exec <id> ls
+
+>dois estados principais de um container
+ ___>___docker stop____>___
+|                          |
+|                          |
+running             stopping
+|                          |   
+|___<____docker run___<____|
+
+>removendo containers criados 
+.docker rm <id>
+
+>removendo containers parados 
+.docker container prune
+
+as camadas de leitura de uma imagem podem ser reaproveitadas.
+as camadas de leitura e escrita das imagens são containers 
+são eles que sao removidos quando os containers sao apagados.
+
+>as imagens também podem ser removidas
+.docker rmi <id>
+
+>?Passando uma imagem como parametro
+>?subindo uma img que ja existe e ja terminou de executar
+
+volumes/armazenamento: quando um container é apagado os dados
+persistidos nele tbm são. para que os dados nao sejam perdidos
+é necessario gravá-los nos "volumes de dados". Que é um lugar
+especial no conteiner que indica uma persistencia no host, é um
+local que é mapeado e armazenado tbm no host.
+
+>o -v indica que o que eu colocar no /var ira ser persistido no host
+.docker run -v "/var/" ubuntu echo "hello-docker" > /var/teste.txt
+
+>da caracteristicas do conteainer, util para descobrir os dados 
+.docker inspect <id>
+
+em Mounts.Source{}, é disponibilizado o caminho do arquivo
+/var/lib/docker/volumes/43aa6a55b6e9ddb19c01759139285c80ccd6a18f68143d278c300e2acb48e2b4/_data
+
+>?
+docker run -it -v "/home/pwd/Desktop:/var/www" ubuntu
+
+
+https://www.youtube.com/watch?v=jWBsegqtr6A&ab_channel=InsightLab
+----
+docker run <img> <container>
+docker stop <id ou nome>
+docker version
+docker images
+docker ps -a (container instanciados)
+docker exec <id> ls
+docker rm <id>
+docker container prune
+docker rmi <id>
+docker run -v "<dir>" ubuntu echo "hello-docker" > /<dir>/teste.txt
+docker inspect <id>
