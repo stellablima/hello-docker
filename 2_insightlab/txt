@@ -80,6 +80,180 @@ docker run -it -v "/home/pwd/Desktop:/var/www" ubuntu
 
 
 https://www.youtube.com/watch?v=jWBsegqtr6A&ab_channel=InsightLab
+>>criando img
+Dockerfile é um arquivo txt da imagem
+
+>para utilizar uma base a sintaxe é
+from alpine:3.9
+
+>para indicar um mantenedor da imagem criada 
+maintainer InsightLab
+
+>para executar um comando, instalar mongo do gerenciador de pacotes do alpine
+(apk add) evitando baixar pacotes, instaladores dentro da imagem (--no--cache)
+run apk add --no-cache  mongodb
+
+>mapeando para o /data/db do host
+volume /data/db
+
+>expondo a porta
+expose 27017
+
+>comando, servidor ouvindo qualquer endereço ip
+cmd  ["mongod", "--bing_ip", "0.0.0.0" ]
+
+vi Dockerfile
+FROM alpine:3.9
+MAINTAINER InsightLab
+RUN apk add --no-cache  mongodb
+VOLUME /data/db
+EXPOSE 27017
+CMD [ "mongod", "--bind_ip", "0.0.0.0" ]
+
+>builde o arquivo com tag regipires/mongo:1.0, e . pra dockerfile do diretorio corrente
+.docker build -t stellablima/mongo:1.0 . 
+
+.docker image list
+
+>push no docker hub
+.docker push stellablima/mongo:1.0
+
+>pull
+.docker pull <username>/mongo:1.0
+
+--------executando imagem---------
+> no-deamon(background), -port mapear no port do conteiner x, para porta y externa ao container,
+$HOME pasta usuario /db da maquina host para :/data/db diretorio interno no container
+.docker run -d -p 27017:27017 -v $HOME/db:/data/db stellablima/mongo:1.0
+
+
+
+
+-----------fazendo testes em ambiente web, cliente mongo-express              ///OU
+>-eviroment NOME_VARIAVEL, mongo-express é a imagem que sera executada 
+.docker run -p 8081:8081 -e ME_CONFIG_MONGODB_SERVER="172.17.0.2" mongo-express
+-----------simulando acesso entre servidores
+>Uma vez que tem uma maquina com mongo on, suba um container de mongo-express em um server diferente(ip do servidor com mongo)
+docker run -p 8081:8081 -e ME_CONFIG_MONGODB_SERVER="192.168.0.8" mongo-express
+
+
+
+------CMD vs Entrypoint
+ENTRYPOINT, comando quando container inicia, default /bin/sh -c 
+CMD, especifica os argumentos de entrada do entrypoint, nao tem default
+ex: entrypoint(chama interpretador)>cmd(os comandos)
+---iterativo
+>docker run -it alpine bash  ==>/bin/sh -c bash
+>docker run -it alpine ls
+>docker run -it alpine echo "ola que ta"
+
+
+-----pratica
+Dockerfile
+ENTRYPOINT ["/bing/ping"]
+CMD["localhost"]
+
+docker build -t alpine-ping .
+docker run --rm alpine-ping
+
+--ex:
+.mv Dockerfile mongo.dockerfile
+.vi Dockerfile
+
+FROM alpine:3.9
+ENTRYPOINT ["/bin/ping"]
+CMD [ "localhost" ]
+
+docker build -t alpine-ping .
+docker run --rm alpine-ping (rm quando parar mata container)
+docker run --rm alpine-ping 8.8.8.8
+
+-----comunicação entre containers network
+.docker network ls
+
+>192.168.xx <- container do host
+.hostname -i
+
+>quando instanciamos um conteiner um ip é criado pra ele
+.docker run -it alpine:3.9
+..hostname -i
+
+cmd <copy ssh cmd>
+docker container list
+docker inspect ip | grep IPAddress
+
+>novo container em outro terminal no mesmo server
+docker run -it alpine:3.9
+docker container list
+docker inspect ip | grep IPAddress
+ping <id container>
+
+//perceba o host é o mesmo so temos dois terminais diferentes
+//o que muda são os containers
+
+-------------criado uma rede propria e nomendo conteiners
+docker network create --driver bridge minha-rede
+docker network ls
+
+----acessando conteiners pelo nome em vez do ip
+docker run -it --name meu-alpine --network minha-rede alpine:3.9
+docker inspect <id> /meu-alpine
+
+<<<EXEMPLO MONGO E EXPRESS EM UMA REDE>>>
+>>>maquina1:
+.docker network create --driver bridge minha-rede
+  >>d- daemon, port:port host:conteiner, -v mapenar volume host:conteiner(espelho), -name nome container
+.docker run -d -p 27018:27017 -v $HOME/db:/data/db --name=mongo --network=minha-rede stellablima/mongo:1.0
+.docker container list
+.docker inspect mongo | grep IPAddress
+ 
+ 
+  >>"mongo" acessou a porta padrão dentro no container
+.docker run -p 8082:8081 -e ME_CONFIG_MONGODB_SERVER="mongo" --network=minha-rede mongo-express
+>>ou
+  docker run -p 8082:8081 --network=minha-rede mongo-express
+
+  >>colocando o proprio ip modos de acesso
+.docker run -p 8082:8081 -e ME_CONFIG_MONGODB_SERVER="192.168.0.28" -e ME_CONFIG_MONGODB_PORT="27018" --network=minha-rede mongo-express
+.docker run -p 8082:8081 -e ME_CONFIG_MONGODB_SERVER="mongo" -e ME_CONFIG_MONGODB_PORT="27017" --network=minha-rede mongo-express
+
+------------///////Docker compose///////------------------
+
+A partir de um único comando executar varios containers, o docker composose pode fazer varias coisas 
+porem o dc so consegue subir varios containers a partir de UM servidor (ps: assistir o curso de kurbenets)
+
+
+ngnix servidor web []
+||
+node [] [] []
+||
+mongo []
+
+
+
+
+
+
+
+
+
+>>>maquina2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+20:38
 ----
 docker run <img> <container>
 docker stop <id ou nome>
@@ -92,3 +266,53 @@ docker container prune
 docker rmi <id>
 docker run -v "<dir>" ubuntu echo "hello-docker" > /<dir>/teste.txt
 docker inspect <id>
+docker inspect ip | grep IPAddress
+docker image list
+docker build -f Dockerfile -t <username>/mongo:1.0 . 
+docker push Insightlab/mongo:1.0
+docker pull Insightlab/mongo:1.0
+docker login
+ssh ipdamaquina
+
+
+vi Dockerfile
+FROM alpine:3.9
+MAINTAINER InsightLab
+RUN apk add --no--cache  mongodb
+VOLUME /data/db
+EXPOSE 27017
+CMD ["mongod", "--bing_ip", "0.0.0.0" ]
+
+
+
+
+
+
+/////////////
+ME_CONFIG_MONGODB_ADMINUSERNAME="admin"
+//ME_CONFIG_MONGODB_ADMINPASSWORD="pass"
+////.docker run -p 8090:8090 -e ME_CONFIG_MONGODB_SERVER="172.17.0.2" -e ME_CONFIG_MONGODB_ADMINUSERNAME="root" -e  ME_CONFIG_MONGODB_ADMINPASSWORD="example" mongo-express
+
+
+
+
+services:
+
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+  mongo-express:
+    links:
+      - "mongo"
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+
+.docker run -d -p 27017:27017 -v $HOME/db:/data/db -e MONGO_INITDB_ROOT_USERNAME="root" -e MONGO_INITDB_ROOT_PASSWORD="example" stellablima/mongo:1.0
