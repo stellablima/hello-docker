@@ -1,0 +1,8 @@
+como integrar:
+API 
+DOCKER 
+NODEJS 
+RABBITMQ
+TALVEZ UM POUCO DE RANCHER
+
+https://pt.slideshare.net/MatheusFidelis1/escalando-apis-com-nodejs-docker-e-rabbitmq

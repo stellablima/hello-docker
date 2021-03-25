@@ -1,0 +1,99 @@
+https://www.youtube.com/watch?v=Kzcz-EVKBEQ&t=928s
+
+Empacotamento de dependencias, container portaveis
+Aplicaçõa sempre funciona da mesma forma em qualquer
+lugar
+
+
+pra construir img
+cd .\3_ProgramadorABordo\
+docker build -t mysql-image -f api/db/Dockerfile .
+
+tag: my-sql
+file: caminho
+.: contexto onde vai gerar a img
+
+docker image ls
+
+docker run -d --rm --name mysql-container mysql-image
+d -  background
+rm - se conteiner existir remove e cria outro
+name - nome container
+
+docker ps
+
+docker exec -i mysql-container mysql -uroot -padmin < api/db/script.sql
+Get-Content api/db/script.sql | docker exec -i mysql-container mysql -uroot -padmin
+exec - comando em um container rodando
+i - iterativo
+mysql-container - nome do container, apois isso o comando que sera executado dentro dele
+
+
+docker exec -it mysql-container /bin/bash
+it - tty
+
+mysql -uroot -padmin
+use programadorabordo
+select * from products;
+exit exit
+
+toda vez que o container é parado os dados são perdidos:
+docker stop mysql-container
+docker run -d --rm --name mysql-container mysql-image
+docker exec -it mysql-container /bin/bash
+mysql -uroot -padmin
+show databases;
+
+pra isso servem os volumes, quando você aponta os dados do seu container
+para seu host os dados ficarão quardados lá 
+docker stop mysql-container
+
+docker run -d -v $(pwd)/api/db/data:/var/lib/mysql --rm --name mysql-container mysql-image
+docker run -d -v ${pwd}/api/db/data:/var/lib/mysql --rm --name mysql-container mysql-image
+
+-----------------
+Node
+
+cd api
+npm init -y
+
+docker-intro-api
+Programador a bordo
+test
+Docker
+Ayrton Teshima
+
+
+npm install --save-dev nodemon
+
+express pra fazer a rota que retorna os produtos
+driver do mysql pra acessar o banco
+
+npm install --save express mysql
+
+docker inspect mysql-container
+
+cd../
+docker build -t node-image -f api/Dockerfile .
+
+docker run -d -v ${pwd}/api:/home/node/app -p 9001:9001 --rm --name node-container node-image
+mapeamento de posta host:container
+
+http://localhost:9001/
+
+
+docker exec
+
+ALTER USER 'root' IDENTIFIED WITH mysql_native_password BY 'admin';
+flush privileges;
+
+
+docker stop node-container
+docker run -d -v ${pwd}/api:/home/node/app -p 9001:9001 --link mysql-container --rm --name node-container node-image
+
+
+docker build -t php-image -f website/Dockerfile .
+docker run -d -v ${pwd}/website:/var/www/html -p 8888:80 --link node-container --rm --name php-container php-image
+
+https://www.youtube.com/watch?v=Kzcz-EVKBEQ&t=928s
+#gratidao

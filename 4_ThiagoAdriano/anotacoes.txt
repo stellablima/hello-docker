@@ -1,0 +1,13 @@
+>1 tentativa dockerizar api league of lines do tutorial hello-node
+>2 voltar e construir api do Thiago e dockerizar
+>3 pegar os tutoriais de front end, tirar a parte do banco e tentar consumir a api no docker
+
+
+
+
+
+
+
+
+
+>1

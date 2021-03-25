@@ -220,7 +220,7 @@ docker inspect <id> /meu-alpine
 ------------///////Docker compose///////------------------
 
 A partir de um único comando executar varios containers, o docker composose pode fazer varias coisas 
-porem o dc so consegue subir varios containers a partir de UM servidor (ps: assistir o curso de kurbenets)
+porem o dc so consegue subir varios containers a partir de UM servidor (ps: assistir o curso de )
 
 
 ngnix servidor web []
@@ -230,20 +230,24 @@ node [] [] []
 mongo []
 
 
+vi docker-compose.yml
 
+version: '3'
+services:
+  mongo:
+    image: stellablima/mongo:1.0
+  mongo-express:
+    image: mongo-express
+    ports:
+    - "8080:8081"
+    links:
+    - mongo
 
+docker-compose up -d
 
-
-
-
-
->>>maquina2
-
-
-
-
-
-
+//continuar depois
+kubernets https://www.youtube.com/watch?v=RuNTvYejG90&list=PLXzx948cNtr8XI5JBemHT9OWuYSPNUtXs&ab_channel=InsightLab
+api https://www.youtube.com/watch?v=z4Vmpc1BOx0&list=PLiHjc2SceL-FMdY2KTZ7lLfrwZ1T3u2vs&index=1&t=831s&ab_channel=CodarMe
 
 
 
